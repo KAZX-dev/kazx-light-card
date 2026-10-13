@@ -1,4 +1,4 @@
-# KΛZX-light-card
+# KAZX-light-card
 
 Une carte interactive qui s'allume : la lumière épouse la forme de la carte et révèle les détails.
 
@@ -25,10 +25,10 @@ script.js    interactions et sons
 
 ## Démo en ligne
 
-Activée avec GitHub Pages : `https://KAZX-dev.github.io/KΛZX-light-card/`
+Activée avec GitHub Pages : `https://kazx-dev.github.io/KAZX-light-card/`
 
 ## Licence
 
 MIT
 
-© 2026 KΛZX - https://kazx-dev.com/ 
+© 2026 KΛZX - https://kazx-dev.com/ - Voir le fichier `LICENSE`.
