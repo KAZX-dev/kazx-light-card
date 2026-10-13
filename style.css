@@ -1,0 +1,293 @@
+/* © 2026 KΛZX - https://kazx-dev.com/ - Licence MIT (voir LICENSE) */
+:root {
+  color-scheme: dark;
+  box-sizing: border-box;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  --bg-centre: #2a2a2a;
+  --bg-bord: #131313;
+  --texte: #ccc;
+}
+html { height: 100%; scroll-padding-top: env(safe-area-inset-top, 0px); }
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  min-height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+  background: radial-gradient(circle at 50% 30%, var(--bg-centre) 0%, var(--bg-bord) 64%);
+  background-color: var(--bg-bord);
+  color: var(--texte);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* ---------- Composant ---------- */
+.lc {
+  --lc-glow: #ffffff;
+  --lc-glow-soft: #ffffffaa;
+  --lc-glow-faint: #ffffff33;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.4rem;
+}
+
+.lc-scene {
+  font-size: 18px;
+  padding: 1.5rem;
+  perspective: 1000px;
+}
+
+.lc-carte {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  width: 18rem;
+  height: 24rem;
+  padding: 1rem;
+  border-radius: 1.8rem;
+  color: white;
+  cursor: pointer;
+  background: radial-gradient(circle at 50% 0%, #3a3a3a 0%, #1a1a1a 64%);
+  box-shadow: 0 0 0 1px #fff3, 0 4px 4px 0 #0004, 0 0 0 1px #333;
+  transition: box-shadow 0.4s, transform 0.2s ease-out, translate 0.4s;
+  outline: none;
+}
+.lc-carte:hover { translate: 0 -0.2rem; }
+
+/* cadre en coins */
+.lc-carte::before {
+  --decal: 1rem;
+  --coin: 4rem;
+  content: "";
+  position: absolute;
+  inset: calc(-1 * var(--decal));
+  border-radius: 2.6rem;
+  box-shadow: inset 0 0 0 0.06rem #fff2;
+  clip-path: polygon(
+    var(--coin) 0, 0 0, 0 var(--coin), var(--coin) var(--coin),
+    var(--coin) calc(100% - var(--coin)), 0 calc(100% - var(--coin)), 0 100%, var(--coin) 100%,
+    var(--coin) calc(100% - var(--coin)), calc(100% - var(--coin)) calc(100% - var(--coin)),
+    calc(100% - var(--coin)) 100%, 100% 100%, 100% calc(100% - var(--coin)),
+    calc(100% - var(--coin)) calc(100% - var(--coin)), calc(100% - var(--coin)) var(--coin),
+    100% var(--coin), 100% 0, calc(100% - var(--coin)) 0, calc(100% - var(--coin)) var(--coin),
+    var(--coin) var(--coin)
+  );
+  transition: all 0.4s;
+  pointer-events: none;
+}
+.lc-carte:hover::before { --decal: 0.5rem; --coin: 8rem; border-radius: 2.2rem; }
+
+/* reflet qui suit la souris */
+.lc-carte::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(circle 9rem at var(--mx, 50%) var(--my, 30%), var(--lc-glow-faint), transparent 70%);
+  opacity: 0;
+  transition: opacity 0.4s;
+  pointer-events: none;
+}
+
+.lc-carte:focus-visible {
+  outline: 2px solid var(--lc-glow);
+  outline-offset: 14px;
+}
+
+/* ---------- Effets de lumière ---------- */
+.lc-couche {
+  position: absolute;
+  inset: 0;
+  perspective: 400px;
+  pointer-events: none;
+  overflow: visible;
+}
+
+.lc-fente {
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: 64%;
+  height: 1.2rem;
+  background: #121212;
+  transform: rotateX(-76deg);
+  transition: all 0.4s;
+}
+
+.lc-lumiere {
+  position: absolute;
+  inset: 0;
+  perspective: 400px;
+  opacity: 0;
+  transition: opacity 0.4s;
+}
+.lc-lumiere div {
+  position: absolute;
+  left: 0; right: 0; top: 0;
+  margin: auto;
+  background: linear-gradient(transparent, var(--lc-glow-soft));
+}
+.lc-petit { width: 70%; height: 3rem; transform: rotateX(-42deg); opacity: 0.4; }
+.lc-moyen { width: 74%; height: 13rem; transform: rotateX(-42deg); filter: blur(1rem); opacity: 0.8; border-radius: 100% 100% 0 0; }
+.lc-grand { width: 50%; height: 13rem; transform: rotateX(22deg); filter: blur(1rem); opacity: 0.6; border-radius: 100% 100% 0 0; }
+
+.lc-ombre {
+  position: absolute;
+  inset: 0;
+  perspective: 400px;
+  opacity: 0.5;
+  transition: opacity 0.4s;
+}
+.lc-ombre div {
+  position: absolute;
+  margin: auto;
+  border-radius: 0 0 100% 100%;
+  transition: opacity 0.4s;
+}
+.lc-o1 { width: 64%; height: 10rem; left: 0; right: 0; top: 9.6em; background: linear-gradient(#000, #0000); filter: blur(0.2rem); opacity: 0.1; transform: rotateX(-22deg); }
+.lc-o2 { width: 62%; height: 10rem; left: 0; right: 0; top: 11em; background: linear-gradient(#000a, #0000); filter: blur(0.8rem); opacity: 0.4; transform: rotateX(22deg); }
+.lc-o3 { width: 0.5rem; height: 4rem; left: 0; right: 11.5rem; top: 3.9em; background: linear-gradient(#0005, #0000); opacity: 0.6; transform: skewY(42deg); }
+.lc-o4 { width: 0.5rem; height: 4rem; right: 0; left: 11.5rem; top: 3.9em; background: linear-gradient(#0005, #0000); opacity: 0.6; transform: skewY(-42deg); }
+
+/* ---------- Contenu ---------- */
+.lc-contenu { position: relative; z-index: 1; }
+
+.lc-icone {
+  position: absolute;
+  top: -13rem;
+  left: 0; right: 0;
+  margin: auto;
+  width: fit-content;
+  line-height: 0;
+  transition: filter 0.4s;
+}
+.lc-icone svg { width: 8rem; height: 8rem; display: block; }
+
+.lc-titre {
+  margin: 0 0 1rem;
+  font-size: 1.2rem;
+  font-weight: normal;
+}
+.lc-texte {
+  margin: 0;
+  padding-bottom: 0.6rem;
+  font-size: 0.75rem;
+  line-height: 1.5;
+  color: #b4b4b4;
+  border-bottom: 1px solid #fff1;
+}
+
+/* ---------- État allumé ---------- */
+.lc-allume .lc-carte {
+  box-shadow:
+    inset 0 1rem 0.1rem -1rem var(--lc-glow-soft),
+    inset 0 -4rem 3rem -3rem #000a,
+    0 -1rem 0.2rem -1rem var(--lc-glow-soft),
+    0 1rem 0.2rem -1rem #000,
+    0 0 0 1px #fff2,
+    0 4px 4px 0 #0004;
+}
+.lc-allume .lc-carte::after { opacity: 1; }
+.lc-allume .lc-fente { background: var(--lc-glow); box-shadow: 0 0 6px var(--lc-glow); }
+.lc-allume .lc-lumiere { opacity: 0.5; }
+.lc-allume .lc-ombre { opacity: 0.8; }
+.lc-allume .lc-o1 { opacity: 0.2; }
+.lc-allume .lc-o2, .lc-allume .lc-o3, .lc-allume .lc-o4 { opacity: 1; }
+.lc-allume .lc-icone { filter: drop-shadow(0 0 0.9rem var(--lc-glow-faint)) brightness(1.6); }
+
+/* ---------- Bouton d'alimentation ---------- */
+.lc-power {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 4.6rem;
+  height: 4.6rem;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  color: #8a8a8a;
+  cursor: pointer;
+  background: radial-gradient(circle at 50% 25%, #4a4a4a, #1b1b1b 70%);
+  box-shadow: inset 0 2px 2px #fff3, inset 0 -6px 10px #0008, 0 6px 14px #0006;
+  transition: color 0.4s, box-shadow 0.4s, transform 0.15s;
+}
+.lc-power:hover { color: #b5b5b5; }
+.lc-power:active { transform: scale(0.93); }
+.lc-power:focus-visible { outline: 2px solid var(--lc-glow); outline-offset: 4px; }
+
+.lc-power svg { width: 46%; height: 46%; overflow: visible; }
+.lc-power path {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.6;
+  stroke-linecap: round;
+}
+/* la barre du bouton (trait vertical) */
+.lc-power svg::after { content: none; }
+.lc-arc { stroke-dasharray: 100; }
+
+.lc-allume .lc-power {
+  color: var(--lc-glow);
+  box-shadow: inset 0 2px 2px #fff3, inset 0 -6px 10px #0008, 0 0 1.8rem var(--lc-glow-soft), 0 6px 14px #0006;
+}
+.lc-allume .lc-power svg { filter: drop-shadow(0 0 5px var(--lc-glow)); }
+
+.lc-power::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2px solid var(--lc-glow);
+  opacity: 0;
+  pointer-events: none;
+}
+.lc-power.lc-anim::after { animation: lc-onde 0.8s ease-out; }
+.lc-power.lc-anim .lc-arc { animation: lc-trace 0.65s ease-out; }
+.lc-power.lc-anim .lc-barre { animation: lc-tomber 0.5s ease-out; }
+.lc-barre { transform-origin: 12px 7px; }
+
+@keyframes lc-onde {
+  from { transform: scale(1); opacity: 0.9; }
+  to { transform: scale(2.4); opacity: 0; }
+}
+@keyframes lc-trace {
+  from { stroke-dashoffset: 100; }
+  to { stroke-dashoffset: 0; }
+}
+@keyframes lc-tomber {
+  from { transform: translateY(-5px) scaleY(0.4); opacity: 0; }
+  to { transform: none; opacity: 1; }
+}
+
+/* ---------- Texte d'état et pastilles ---------- */
+.lc-etat { margin: 0; font-size: 0.95rem; text-align: center; }
+
+.lc-pastilles { display: flex; gap: 0.6rem; }
+.lc-pastille {
+  width: 1.6rem;
+  height: 1.6rem;
+  padding: 0;
+  border: 2px solid transparent;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+.lc-pastille:hover { transform: scale(1.12); }
+.lc-pastille:focus-visible { outline: 2px solid #ccc; outline-offset: 3px; }
+.lc-pastille.lc-choisie { border-color: #131313; box-shadow: 0 0 0 2px #ccc; }
+
+.lc-copy a { color: inherit; text-decoration: none; border-bottom: 1px solid #fff2; }
+.lc-copy a:hover { color: #bbb; }
+.lc-copy { margin: 0.6rem 0 0; font-size: 0.7rem; color: #777; text-align: center; }
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition-duration: 0.01s !important; animation: none !important; }
+}
+@media (max-width: 420px) {
+  .lc-scene { font-size: 16px; padding: 1rem; }
+}
